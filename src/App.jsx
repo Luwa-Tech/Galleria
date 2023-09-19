@@ -7,9 +7,9 @@ import Layout from "./component/Layout"
 const App = () => {
   const router= createBrowserRouter(createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-    <Route index element={Signup} />
-    <Route path="/signin" element={Signin} />
-    <Route path="/gallery" element={Gallery} />
+    <Route index element={<Signup />} />
+    <Route path="/signin" element={<Signin />} />
+    <Route path="/gallery" element={<Gallery />} />
     </Route>
   ))
   return (
