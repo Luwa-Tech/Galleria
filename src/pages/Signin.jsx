@@ -1,13 +1,18 @@
-import { NavLink} from "react-router-dom"
+import {useNavigate} from "react-router-dom"
 import {useForm} from "react-hook-form"
 import {ImSpinner} from "react-icons/im"
 
 import { useState,  } from "react"
 import {BsFillEyeFill, BsFillEyeSlashFill} from "react-icons/bs"
 
+import useAuth from "../hooks/useAuth"
+
 
 const Signin = () => {
     const [visible, setVisible] = useState(false)
+    const [error, setError] = useState("")
+    const {signInUser} = useAuth()
+    const navigate = useNavigate()
 
     const form = useForm({
         mode: "onBlur"
@@ -16,12 +21,23 @@ const Signin = () => {
     const {register, handleSubmit, formState, } = form
     const {errors, isDirty, isValid, isSubmitting, } = formState
 
+    const submitForm = async (data) => {
+        try {
+            const response =  await signInUser(data.email, data.password)
+            console.log(response)
+            navigate("/gallery")
+        }catch(e) {
+            console.log(e)
+            setError(e.message)
+        }
+    }
+
 
     return (
         <main className="my-[5rem]">
             <section className="md:w-[30%] mx-auto w-[80%]">
                 <h1 className="text-[1.3rem] md:text-[1.7rem] mb-6 font-medium leading-normal text-center">Welcome to Galleria</h1>
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+                <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)} noValidate>
                     <label htmlFor="email" className="flex flex-col gap-2 text-[1rem] md:text-[1.26rem] font-normal leading-normal">
                         Email
                         <input className="border-[1.5px] border-secondary-500 py-2 px-2 text-[1rem] rounded-[0.25rem] outline-none" id="email" type="email"  {...register("email", {
@@ -49,9 +65,11 @@ const Signin = () => {
                         </div>
                         <p className="text-red-700 text-[.8rem]">{errors.password?.message}</p>
                     </label>
+                    {
+                        error !== "" && <p className="text-red-700 text-[.8rem]">{error}</p>
+                    }
                     <button disabled={!isDirty || !isValid || isSubmitting} className={`bg-button-400 py-2 text-primary-500 hover:bg-opacity-[0.7] flex justify-center items-center rounded-[0.3rem] md:text-[1.1rem] mb-2 ${isSubmitting || !isDirty || !isValid ? "bg-opacity-[0.7] hover:bg-opacity-[0.7]" : ""}`}>{isSubmitting ? <ImSpinner className={`${isSubmitting ? "animate-spin bg-opacity-[0.7]" : "animate-none"} w-6 h-6`}/> : "Login"}</button>
                 </form>
-                <p className=" md:text-[1.1rem] font-normal leading-normal text-center">No account yet? <NavLink to="/" className="hover:underline text-secondary-500 md:text-[1rem]">SignUp</NavLink></p>
             </section>
         </main>
     )
