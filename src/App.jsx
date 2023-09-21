@@ -1,4 +1,6 @@
 import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom"
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd'
 import Signin from "./pages/Signin"
 import Gallery from "./pages/Gallery"
 import Layout from "./component/Layout"
@@ -17,9 +19,11 @@ const App = () => {
     </Route>
   ))
   return (
+    <DndProvider backend={HTML5Backend}>
     <AuthProvider>
     <RouterProvider router={router} />
     </AuthProvider>
+    </DndProvider>
   )
 }
 

@@ -1,6 +1,15 @@
+import { useDrag } from "react-dnd"
+
 const ImageCard = (props) => {
+    const [{isDragging}, drag] = useDrag(() => ({
+        type: "IMAGE",
+        item: {id: props?.id},
+        // collect: (monitor) => ({
+        //     isDragging: monitor.isDragging()
+        // })
+    }))
     return (
-        <div className="w-[10rem] md:w-[12rem] h-[13rem] md:h-[16rem]">
+        <div ref={drag}  className={`w-[10rem] md:w-[12rem] h-[13rem] cursor-grab md:h-[16rem] ${isDragging ? "opacity-[0.5]" : "opacity-1"}`}>
                 <div className="flex items-center justify-center"> 
                     <img className="w-[10rem] h-[13rem] md:w-[18rem] md:h-[15rem]" src={props?.image} />
                 </div>

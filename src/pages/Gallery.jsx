@@ -5,17 +5,31 @@ import ImageCard from "../component/ImageCard"
 import { useState, useEffect } from "react"
 import { CiSearch } from "react-icons/ci"
 
+import { useDrop } from "react-dnd"
+
 const Gallery = () => {
     const {user, signOutUser} = useAuth()
     const [searchQuery, setSearchQuery] = useState("")
     const [filteredImages, setFilteredImages] = useState([])
-    const [images, _setImages] = useState(galleryImages)
+    const [images, setImages] = useState(galleryImages)
     const navigate = useNavigate()
 
-    const logout = () => {
-        signOutUser()
-        navigate("/")
+    //handle when image is dropped
+    const onImageDrop = (droppedImageId, newIndex) => {
+        const droppedImageIndex = images.findIndex(image=> image.id === droppedImageId)
+        const newImages= [...images]
+        const [draggedImage] = newImages.splice(droppedImageIndex, 1)
+        newImages.splice(newIndex, 0, draggedImage)
+        setImages(newImages)
     }
+
+    //drop function
+    const [, drop] = useDrop(() => ({
+        accept: "IMAGE",
+        drop: (item) => {
+            onImageDrop(item.id)
+        }
+    }))
 
     const searchQueryImages = () => {
         return galleryImages.filter(image => {
@@ -23,13 +37,17 @@ const Gallery = () => {
         })
     }
 
-
     const handleSubmit = (e) => {
         e.preventDefault()
         if(searchQuery === "") return
         const newFilteredImages = searchQueryImages()
         setFilteredImages(newFilteredImages)
         setSearchQuery("")
+    }
+
+    const logout = () => {
+        signOutUser()
+        navigate("/")
     }
 
     useEffect(() => {
@@ -51,7 +69,7 @@ const Gallery = () => {
                 </button>
                 </form>
             </section>
-            <section className="mx-auto w-[90%] grid grid-cols-2 md:grid-cols-4 md:gap-y-20 gap-y-24 gap-x-4 md:gap-x-8 md:w-[60%] md:mx-auto">
+            <section ref={drop} className="mx-auto w-[90%] grid grid-cols-2 md:grid-cols-4 md:gap-y-20 gap-y-24 gap-x-4 md:gap-x-8 md:w-[60%] md:mx-auto">
             {
                 filteredImages.map(items => {
                     return (
